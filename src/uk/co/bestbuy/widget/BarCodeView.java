@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 
 public class BarCodeView extends View {
+
+	private static final int BARCODE_LENGTH = 90;
 	
 	public BarCodeView(Context context) {
 		super(context);
@@ -23,36 +25,35 @@ public class BarCodeView extends View {
 	
 	@Override
 	protected void onDraw(Canvas canvas) {
-		int width = this.getWidth();
-		int height = this.getHeight();
 		
 		String[] barWidthArray = getContext().getResources().getStringArray(R.array.bar_widths);
 		int[] barWidths = convertToIntArray(barWidthArray);
 
-		drawBarCode(canvas, barWidths, 1, 10, 0, height);
+		drawBarCode(canvas, barWidths, this.getWidth(), this.getHeight());
 	}
 	
-	private void drawBarCode(Canvas c, int[] bars, int proportion,
-							 int actualLeft, int barcodeTop, int barcodeHeight) {
+	private void drawBarCode(Canvas c, int[] bars,
+							 int availWidth, int availHeight) {
 
 		Paint paint = new Paint();
 		paint.setColor(0xff000000);
 		paint.setStyle(Paint.Style.FILL);
 		
 		int pos=0;
+
+		int[] normalizedBars = reduce(bars, sum(bars)/BARCODE_LENGTH);
+		int proportion = availWidth/BARCODE_LENGTH;
+		int left = (availWidth - (BARCODE_LENGTH*proportion))/2;
 		
-		for (int i=0; i<bars.length; i+=2) {
+		for (int i=0; i<normalizedBars.length; i+=2) {
 			
-			int blackWidth = bars[i];
-			c.drawRect(actualLeft+(pos*proportion), barcodeTop, 
-					   actualLeft+(pos*proportion)+(blackWidth*proportion), barcodeHeight,
+			int blackWidth = normalizedBars[i];
+			c.drawRect(left+(pos*proportion), 0,
+					   left+(pos*proportion)+(blackWidth*proportion), availHeight,
 					   paint);
-			//c.drawCircle(actualLeft+(pos*proportion), 50, 5, paint);
-			Log.d("BarCodeView", "Drew bar position "+i+" of width "+bars[i]+": " 
-				  + (actualLeft+(pos*proportion)) + "," + barcodeTop + "," + blackWidth*proportion +"," + barcodeHeight);
-			
-			if (bars.length > (i+1)) {
-				int whiteWidth = bars[i+1];
+
+			if (normalizedBars.length > (i+1)) {
+				int whiteWidth = normalizedBars[i+1];
 				pos += (blackWidth + whiteWidth);
 			}
 		}
@@ -70,6 +71,26 @@ public class BarCodeView extends View {
 		}
 		
 		return result;
+	}
+	
+	private int[] reduce(int[] array, int divisor) {
+		int[] result = new int[array.length];
+
+		for (int i=0; i<result.length; i++) {
+			result[i] = array[i]/divisor;
+		}
+
+		return result;
+	}
+
+	private int sum(int[] array) {
+		int sum=0;
+		
+		for (int i=0; i<array.length; i++) {
+			sum += array[i];
+		}
+
+		return sum;
 	}
 
 	private int[] reduce(int[] array, int divisor) {

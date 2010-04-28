@@ -36,6 +36,10 @@
 	<uk.co.bestbuy.widget.BarCodeView android:id="@+id/barcode"
 				android:layout_width="fill_parent"
 				android:layout_height="fill_parent"
+				android:layout_marginBottom="5dip"
+				android:layout_marginTop   ="5dip"
+				android:layout_marginLeft  ="5dip"
+				android:layout_marginRight ="5dip"
 				android:layout_below="@id/message"
 				android:layout_above="@id/customer_id"
 				/>
