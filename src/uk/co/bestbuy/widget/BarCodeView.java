@@ -93,14 +93,4 @@ public class BarCodeView extends View {
 		return sum;
 	}
 
-	private int[] reduce(int[] array, int divisor) {
-		int[] result = new int[array.length];
-
-		for (int i=0; i<array.length; i++) {
-			result[i] = array[i] / divisor;
-		}
-
-		return result;
-	}
-
 }
